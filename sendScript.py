@@ -29,6 +29,12 @@ def sendJson(payload, url = 'http://192.168.45.156/sensores/web/mediciones', typ
   return 1
 
 # Send data to web service, passing each value (one by one)
+# date = String with any valid date format.
+# band = small integer (probably not the right format, we did not know about this).
+# value = Any number.
+# sensor_id = valid ids, as of 05.04.15 numbers from 1 to 4, to add other sensors go to: http://192.168.45.156/sensores/web/sensor.
+# type_id = 1, 2 or 3, as of 05.04.15 this is a dummy column (it probably makes no sense).
+# comment = Optional, any string-like text you want to pass.
 def sendRaw(date, band, value, sensor_id, type_id, comment = None,
 url = 'http://192.168.45.156/sensores/web/mediciones', type = 'json'):
 
