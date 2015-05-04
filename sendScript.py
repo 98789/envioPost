@@ -3,6 +3,7 @@
 from json import dumps
 import requests
 
+# Send data to web service, passing a JSON object as INPUT
 def sendJson(payload, url = 'http://192.168.45.156/sensores/web/mediciones', type = 'json'):
 
   if type == 'json':
@@ -27,7 +28,7 @@ def sendJson(payload, url = 'http://192.168.45.156/sensores/web/mediciones', typ
 
   return 1
 
-
+# Send data to web service, passing each value (one by one)
 def sendRaw(date, band, value, sensor_id, type_id, comment = None,
 url = 'http://192.168.45.156/sensores/web/mediciones', type = 'json'):
 
