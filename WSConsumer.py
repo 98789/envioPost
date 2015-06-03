@@ -30,7 +30,7 @@ def sendJson(payload, url = 'http://radiogis.uis.edu.co/sensores/web/medidas', t
 # longitude = numeric value or string containning a numeric value
 
 def sendRaw(date, tag, value, sensor_id, type_id, longitude, latitude,
-comment = None, url = 'http://radiogis.uis.edu.co/sensores/web/mediciones', 
+comment = None, url = 'http://radiogis.uis.edu.co/sensores/web/medidas', 
 type = 'json'):
 
   payload = {"fecha_toma": date, "etiqueta": tag, "valor_medido": value,
