@@ -11,33 +11,24 @@ def sendJson(payload, url = 'http://192.168.45.156/sensores/web/mediciones', typ
   elif type == 'xml':
     headers = {'content-type': 'application/xml'}
   else:
-    print "unknown content type"
+    print("unknown content type")
     return -1
 
   r = requests.post(url, data=dumps(payload), headers=headers)
 
-  responses = {
-  1: '',
-  2: 'Los datos han sido almacenados con éxito.',
-  3: '',
-  4: 'Error, no se encontraron datos o el formato es incorrecto.',
-  5: 'Error, los datos contienen valores no válidos.'
-  }
-
-  print r.status_code,': ',responses[r.status_code/100]
-
+  print(r.json())
   return 1
 
 # Send data to web service, passing each value (one by one)
 # date = String with any valid date format.
-# band = small integer (probably not the right format, we did not know about this).
-# value = Any number.
-# sensor_id = valid ids, as of 05.04.15 numbers from 1 to 4, to add other sensors go to: http://192.168.45.156/sensores/web/sensor.
+# tag = aditional information that you consider necessary, such as band.
+# value = A number (for single sensors) or a matrix stored in a string (using semicolons for rows and tabs for columns).
+# sensor_id = valid ids, as of 03.06.15 numbers from 1 to 3, to add other sensors go to: http://radiogis.uis.edu.co/sensores/web/sensor.
 # type_id = 1, 2 or 3, as of 05.04.15 this is a dummy column (it probably makes no sense).
 # comment = Optional, any string-like text you want to pass.
-def sendRaw(date, band, value, sensor_id, type_id, comment = None,
-url = 'http://192.168.45.156/sensores/web/mediciones', type = 'json'):
+def sendRaw(date, tag, value, sensor_id, type_id, comment = None,
+url = 'http://radiogis.uis.edu.co/sensores/web/mediciones', type = 'json'):
 
-  payload = {"fecha_toma": date, "banda": band, "valor_medido": value, "sensor": sensor_id, "tipo": type_id, "comentario": comment}
-  sendJson(payload)
+  payload = {"fecha_toma": date, "etiqueta": tag, "valor_medido": value, "sensor": sensor_id, "tipo": type_id, "comentario": comment}
+  sendJson(payload, url, type)
   return 1
