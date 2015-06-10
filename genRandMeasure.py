@@ -5,10 +5,11 @@ from numpy.random import randint
 date = datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')
 tag = randint(1,11)
 value = ""
-for i in range(randint(1,16)):
-    for j in range (randint(1,200)):
+for i in range(randint(1,17)):
+    for j in range (randint(1,201)):
         value+=str(randint(20000))+" "
-    value+=";"
+    value = value[0:-1]+";"
+value = value[0:-1]
 sensor_id = 2
 type_id = randint(1,4)
 longitude = -72 + randint(-20000,20000)/10000.0
