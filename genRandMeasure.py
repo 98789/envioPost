@@ -4,8 +4,8 @@ from numpy.random import randint
 
 date = datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')
 tag = randint(1,11)
-limit_i = randint(1,17)
-limit_j = randint(1,201)
+limit_i = randint(1,201)
+limit_j = randint(1,17)
 value = ';'.join(' '.join(str(randint(20000)) for j in range(limit_j)) for i in range(limit_i))
 value = value[0:-1]
 sensor_id = 2
