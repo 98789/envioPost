@@ -1,43 +1,59 @@
 #!/usr/bin/python
-from json import dumps
+from bs4 import BeautifulSoup
+import json
 import requests
 
-def send(payload, url='http://radiogis.uis.edu.co/sensores/web/medidas',
-         type='json'):
+
+def authenticate(user, password, URL):
+    """log in to URL"""
+
+    session = requests.Session()
+    headers = {'User-Agent': 'Mozilla/5.0'}
+
+    login_page = BeautifulSoup(session.get(URL).content)
+    login_page.find(attrs={"name":"csrf-token"}).get("content")
+    token = login_page.find(attrs={"name":"csrf-token"}).get("content")
+
+    payload = {'login-form[login]':user,'login-form[password]':password, '_csrf': token}
+
+    resp = session.post(URL, data=payload, headers=headers)
+
+    if resp.url == URL:
+        raise Exception("Error authenticating")
+        return 0
+
+    return session
+
+
+def send(payload, URL, login_URL, user, password, data_format='json'):
     """Send formatted data to a web service"""
 
     types = {'json':'application/json','xml':'application/xml'}
 
     try:
-        headers = {'content-type': types[type]}
+        headers = {'content-type': types[data_format]}
     except KeyError:
-        raise Exception("unknown content type %s" % type)
+        raise Exception("unknown content type %s" % data_format)
         return 0
 
-    r = requests.post(url, data=dumps(payload), headers=headers)
+    session = authenticate(user, password, login_URL)
+    if session:
+        payload['_csrf'] = session.cookies.get("_csrf")
+        resp = session.post(URL, data=json.dumps(payload), headers=headers)
+        print(resp.json())
+    else:
+        return 0
 
-    print(r.json())
     return 1
 
 
-# date: String containing a date formatted as dd/mm/yyyy hh:mm:ss.
-# tag: Any aditional information you consider necessary, such as band.
-# value: A number (for single sensors) or a matrix stored in a string
-#        (using semicolons for rows and tabs for columns).
-# sensor_id: check current valid ids and add new ones at: 
-#            http://radiogis.uis.edu.co/sensores/web/sensor.
-# type_id: 1, 2 or 3, as of 05.04.15 this is a dummy column (it probably makes no sense).
-# comment: Optional, any string-like text you want to pass.
-# lat: numeric value or string containning a numeric value
-# long: numeric value or string containning a numeric value
-
-def send_raw(date, value, sensor_id, type_id, long, lat, comment=None,
-             url='http://radiogis.uis.edu.co/sensores/web/medidas',
-             type='json', tag=None):
+def send_raw(date, value, sensor_id, type_id, lgt, lat, URL, login_URL,
+             user, password, comment=None, tag=None, data_format='json'):
     """Send raw data to a web service"""
 
     payload = {"fecha_toma": date, "etiqueta": tag, "valor_medido": value,
                "sensor": sensor_id, "tipo": type_id, "comentario": comment,
-               "latitud": lat, "longitud": long}
-    send(payload, url, type)
+               "latitud": lat, "longitud": lgt}
+    send(payload, URL, login_URL, user, password, data_format)
+
     return 1
