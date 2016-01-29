@@ -4,15 +4,22 @@ import json
 import requests
 
 
+def get_token(session, URL):
+    """Retrieve csrf token URL"""
+
+    login_page = BeautifulSoup(session.get(URL).content)
+    login_page.find(attrs={"name":"csrf-token"}).get("content")
+    token = login_page.find(attrs={"name":"csrf-token"}).get("content")
+
+    return token
+
 def authenticate(user, password, URL):
     """log in to URL"""
 
     session = requests.Session()
     headers = {'User-Agent': 'Mozilla/5.0'}
 
-    login_page = BeautifulSoup(session.get(URL).content)
-    login_page.find(attrs={"name":"csrf-token"}).get("content")
-    token = login_page.find(attrs={"name":"csrf-token"}).get("content")
+    token = get_token(session, URL)
 
     payload = {'login-form[login]':user,'login-form[password]':password, '_csrf': token}
 
@@ -38,9 +45,9 @@ def send(payload, URL, login_URL, user, password, data_format='json'):
 
     session = authenticate(user, password, login_URL)
     if session:
-        payload['_csrf'] = session.cookies.get("_csrf")
+        payload['_csrf'] = get_token(session, URL)
         resp = session.post(URL, data=json.dumps(payload), headers=headers)
-        print(resp.json())
+        print(resp.text)
     else:
         return 0
 
